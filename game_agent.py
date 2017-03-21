@@ -168,7 +168,7 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            
+            return m1
             pass
         
         # Return the best move from the last completed search iteration
@@ -209,34 +209,33 @@ class CustomPlayer:
             raise Timeout()
 
         # TODO: finish this function!
-        prospect_game = game.copy()
-        moves = prospect_game.get_legal_moves()
+
+        moves = game.get_legal_moves()
         if not moves:
             return float("-inf"), (-1,-1)
         if depth == 0:
-            return self.score(prospect_game, self), moves[0]
+            return self.score(game, self), moves[0]
             
         if maximizing_player == True:
             best_score = float("-inf")
             move = ()
             for m in moves:    
-                v, _ = self.minimax(prospect_game.forecast_move(m), depth-1, maximizing_player = False)
+                v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = False)
                 if v > best_score:
                     best_score = v
                     move = m
-            #print (move)
-            prospect_game.apply_move(move)
+
             return best_score, move
         
         if maximizing_player == False:
             best_score = float("inf")
             move = ()
             for m in moves:
-                v, _ = self.minimax(prospect_game.forecast_move(m), depth-1, maximizing_player = True)
+                v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = True)
                 if v < best_score:
                     best_score = v
                     move = m
-            prospect_game.apply_move(move)        
+       
             return best_score, move
         #raise NotImplementedError
 
@@ -281,38 +280,36 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        # TODO: finish this function!
-        prospect_game = game.copy()
-        moves = prospect_game.get_legal_moves()
 
+        moves = game.get_legal_moves()
+        
         if not moves:
             return float("-inf"), (-1,-1)
         if depth == 0:
-            return self.score(prospect_game, self), moves[0]
+            return self.score(game, self), moves[0]
             
         if maximizing_player == True:
             move = ()
             for m in moves:
-                v, _ = self.alphabeta(prospect_game.forecast_move(m), depth-1, alpha, beta, maximizing_player = False)
+                v, _ = self.alphabeta(game.forecast_move(m), depth-1, alpha, beta, maximizing_player = False)
                 if v > alpha:
                     alpha = v
                     move = m
                 if beta <= alpha:
                     break
-            prospect_game.apply_move(move)
-            #print (prospect_game.to_string())
+
             return alpha, move
 
         
         if maximizing_player == False:
             move = ()
             for m in moves:
-                v, _ = self.alphabeta(prospect_game.forecast_move(m), depth-1, alpha, beta, maximizing_player = True)
+                v, _ = self.alphabeta(game.forecast_move(m), depth-1, alpha, beta, maximizing_player = True)
                 if v < beta:
                     beta = v
                     move = m
                 if beta <= alpha:
                     break
-            prospect_game.apply_move(move)        
+       
             return beta, move
         #raise NotImplementedError
