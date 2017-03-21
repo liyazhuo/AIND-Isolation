@@ -130,14 +130,15 @@ class CustomPlayer:
         self.time_left = time_left
 
         # TODO: finish this function!
-        if not legal_moves:
-            return (-1, -1)
-        moves = game.get_legal_moves(self)
-        i = random.randint(0,len(moves)-1)
-        game.apply_move(moves[i])
+
         # Perform any required initializations, including selecting an initial
         # move from the game board (i.e., an opening book), or returning
         # immediately if there are no legal moves
+        
+        
+        if not legal_moves:
+            return (-1, -1)
+
 
         try:
             # The search method call (alpha beta or minimax) should happen in
@@ -152,14 +153,14 @@ class CustomPlayer:
                     score, move = self.minimax(game.forecast_move(m), self.search_depth)
                     if score > s:
                         s = score
-                        m1 = move
+                        m1 = m
                 return m1 
             elif self.method == 'alphabeta':
                 for m in legal_moves:
                     score, move = self.alphabet(game.forecast_move(m), self.search_depth)
                     if score > s:
                         s = score
-                        m1 = move
+                        m1 = m
                 return m1
                 
                 
