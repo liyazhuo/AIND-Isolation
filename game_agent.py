@@ -148,6 +148,7 @@ class CustomPlayer:
             
             s = float("-inf")
             m1 = ()
+            print (self.time_left)
             if self.method == 'minimax':
                 for m in legal_moves:
                     score, move = self.minimax(game.forecast_move(m), self.search_depth)
