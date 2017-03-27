@@ -44,10 +44,11 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
         
-    own_weight = 1
-    opp_weight = 2
+    own_weight = 1.0
+    opp_weight = 2.0
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
     return float(own_weight*own_moves - opp_weight*opp_moves)
     #raise NotImplementedError
 
@@ -129,6 +130,7 @@ class CustomPlayer:
 
         self.time_left = time_left
 
+
         # TODO: finish this function!
 
         # Perform any required initializations, including selecting an initial
@@ -148,21 +150,53 @@ class CustomPlayer:
             
             s = float("-inf")
             m1 = ()
-            print (self.time_left)
-            if self.method == 'minimax':
-                for m in legal_moves:
-                    score, move = self.minimax(game.forecast_move(m), self.search_depth)
-                    if score > s:
-                        s = score
-                        m1 = m
-                return m1 
-            elif self.method == 'alphabeta':
-                for m in legal_moves:
-                    score, move = self.alphabet(game.forecast_move(m), self.search_depth)
-                    if score > s:
-                        s = score
-                        m1 = m
-                return m1
+            best_score = float("-inf")
+            m2 = ()
+
+
+            if self.iterative == True:
+                if self.method == 'minimax':
+                    for d in range(self.search_depth+1):
+                        for m in legal_moves:
+                            score, move = self.minimax(game.forecast_move(m), d)
+                            if score > s:
+                                s = score
+                                m1 = move
+
+                        best_score = s
+                        m2 = m1
+                        if self.time_left() < self.TIMER_THRESHOLD:
+                            raise Timeout
+                        
+                elif self.method == 'alphabeta':
+                    for d in range(self.search_depth+1):
+                        for m in legal_moves:
+                            score, move = self.alphabeta(game.forecast_move(m), d)
+                            if score > s:
+                                s = score
+                                m1 = move
+                        best_score = s
+                        m2 = m1
+                        if self.time_left() < self.TIMER_THRESHOLD:
+                            raise Timeout
+                                       
+                return m2                        
+                    
+            else:
+                if self.method == 'minimax':
+                    for m in legal_moves:
+                        score, move = self.minimax(game.forecast_move(m), self.search_depth)
+                        if score > s:
+                            s = score
+                            m1 = m
+                    return m1 
+                elif self.method == 'alphabeta':
+                    for m in legal_moves:
+                        score, move = self.alphabet(game.forecast_move(m), self.search_depth)
+                        if score > s:
+                            s = score
+                            m1 = m
+                    return m1
                 
                 
             
@@ -170,8 +204,8 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            return m1
-            pass
+            return m2
+            #pass
         
         # Return the best move from the last completed search iteration
         raise NotImplementedError
@@ -213,6 +247,7 @@ class CustomPlayer:
         # TODO: finish this function!
 
         moves = game.get_legal_moves()
+
         if not moves:
             return float("-inf"), (-1,-1)
         if depth == 0:
@@ -221,24 +256,27 @@ class CustomPlayer:
         if maximizing_player == True:
             best_score = float("-inf")
             move = ()
-            for m in moves:    
+            for m in moves:
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = False)
                 if v > best_score:
                     best_score = v
                     move = m
 
-            return best_score, move
+
         
-        if maximizing_player == False:
+        elif maximizing_player == False:
             best_score = float("inf")
             move = ()
-            for m in moves:
+            for m in moves:           
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = True)
                 if v < best_score:
                     best_score = v
                     move = m
        
-            return best_score, move
+
+        
+        return best_score, move
+
         #raise NotImplementedError
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
@@ -303,7 +341,7 @@ class CustomPlayer:
             return alpha, move
 
         
-        if maximizing_player == False:
+        elif maximizing_player == False:
             move = ()
             for m in moves:
                 v, _ = self.alphabeta(game.forecast_move(m), depth-1, alpha, beta, maximizing_player = True)
