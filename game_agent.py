@@ -7,12 +7,15 @@ You must test your agent's strength against a set of agents with known
 relative strength using tournament.py and include the results in your report.
 """
 import random
+import isolation
 
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
 
+#class SearchDepthError(Exception):
+#    pass
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -141,7 +144,6 @@ class CustomPlayer:
         if not legal_moves:
             return (-1, -1)
 
-
         try:
             # The search method call (alpha beta or minimax) should happen in
             # here in order to avoid timeout. The try/except block will
@@ -149,54 +151,59 @@ class CustomPlayer:
             # when the timer gets close to expiring
             
             s = float("-inf")
-            m1 = ()
+            m1 = legal_moves[0]
             best_score = float("-inf")
-            m2 = ()
+            m2 = legal_moves[0]
+            
 
 
             if self.iterative == True:
                 if self.method == 'minimax':
-                    for d in range(self.search_depth+1):
+                    depth = 0
+                    while m2 != (-1,-1):
                         for m in legal_moves:
-                            score, move = self.minimax(game.forecast_move(m), d)
+                            score, _ = self.minimax(game.forecast_move(m), depth)
                             if score > s:
                                 s = score
-                                m1 = move
+                                m1 = m
 
                         best_score = s
                         m2 = m1
+                        depth = depth + 1
                         if self.time_left() < self.TIMER_THRESHOLD:
-                            raise Timeout
+                            raise Timeout()
                         
                 elif self.method == 'alphabeta':
-                    for d in range(self.search_depth+1):
+                    depth = 0
+                    while m2 != (-1,-1):
                         for m in legal_moves:
-                            score, move = self.alphabeta(game.forecast_move(m), d)
+                            score, _ = self.alphabeta(game.forecast_move(m), depth)
                             if score > s:
                                 s = score
-                                m1 = move
+                                m1 = m
                         best_score = s
                         m2 = m1
+                        depth = depth + 1
                         if self.time_left() < self.TIMER_THRESHOLD:
-                            raise Timeout
+                            raise Timeout()
                                        
-                return m2                        
+                      
                     
             else:
                 if self.method == 'minimax':
                     for m in legal_moves:
-                        score, move = self.minimax(game.forecast_move(m), self.search_depth)
+                        score, _ = self.minimax(game.forecast_move(m), self.search_depth)
                         if score > s:
                             s = score
-                            m1 = m
-                    return m1 
+                            m2 = m
+
                 elif self.method == 'alphabeta':
                     for m in legal_moves:
-                        score, move = self.alphabet(game.forecast_move(m), self.search_depth)
+                        score, _ = self.alphabeta(game.forecast_move(m), self.search_depth)
                         if score > s:
                             s = score
-                            m1 = m
-                    return m1
+                            m2 = m
+
                 
                 
             
@@ -204,11 +211,11 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            return m2
+            return m1
             #pass
-        
+        return m2
         # Return the best move from the last completed search iteration
-        raise NotImplementedError
+        #raise NotImplementedError
 
     def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
@@ -252,7 +259,8 @@ class CustomPlayer:
             return float("-inf"), (-1,-1)
         if depth == 0:
             return self.score(game, self), moves[0]
-            
+        
+        
         if maximizing_player == True:
             best_score = float("-inf")
             move = ()
