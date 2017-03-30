@@ -150,6 +150,8 @@ class CustomPlayer:
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
             
+            # Initialisation : s and m1 are for score and best moves for the current depth of search
+            #best_score and m2 are for best score of the over all search
             s = float("-inf")
             m1 = legal_moves[0]
             best_score = float("-inf")
@@ -159,39 +161,51 @@ class CustomPlayer:
 
             if self.iterative == True:
                 if self.method == 'minimax':
+                
                     depth = 0
-                    while m2 != (-1,-1):
+                    while m2 != (-1,-1):# Iterate depths until there is no more moves left
                         for m in legal_moves:
+                            # Implement minimax search for every potential moves
                             score, _ = self.minimax(game.forecast_move(m), depth)
+                            # Return with the best moves of the current depth of search
                             if score > s:
                                 s = score
                                 m1 = m
-
-                        best_score = s
+                        # Store the score and best moves so far before funthering to the next search depth
+                        best_score = s  
                         m2 = m1
                         depth = depth + 1
+                        #If time is running out, return the best move so far
                         if self.time_left() < self.TIMER_THRESHOLD:
                             raise Timeout()
                         
                 elif self.method == 'alphabeta':
+                
                     depth = 0
-                    while m2 != (-1,-1):
+                    while m2 != (-1,-1):# Iterate depths until there is no more moves left
                         for m in legal_moves:
+                            # Implement alpha-beta pruning for every potential moves
                             score, _ = self.alphabeta(game.forecast_move(m), depth)
+                            # Return with the best moves of the current depth of search
                             if score > s:
                                 s = score
                                 m1 = m
+                        # Store the score and best moves so far before funthering to the next search depth        
                         best_score = s
                         m2 = m1
                         depth = depth + 1
+                        #If time is running out, return the best move so far
                         if self.time_left() < self.TIMER_THRESHOLD:
                             raise Timeout()
                                        
                       
                     
             else:
+                #Complete search without iterative deepning
+                
                 if self.method == 'minimax':
                     for m in legal_moves:
+                        #Implement minimax search, return with the best moves found
                         score, _ = self.minimax(game.forecast_move(m), self.search_depth)
                         if score > s:
                             s = score
@@ -199,6 +213,7 @@ class CustomPlayer:
 
                 elif self.method == 'alphabeta':
                     for m in legal_moves:
+                        #Implement alpha-beta pruning, return with the best moves found                       
                         score, _ = self.alphabeta(game.forecast_move(m), self.search_depth)
                         if score > s:
                             s = score
@@ -207,15 +222,15 @@ class CustomPlayer:
                 
                 
             
-            pass
+            
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
             return m1
-            #pass
+
         return m2
         # Return the best move from the last completed search iteration
-        #raise NotImplementedError
+
 
     def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
@@ -248,23 +263,29 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise Timeout()
+
 
         # TODO: finish this function!
 
+        #Initialisation: find all the possible moves, and store them in "moves" list
         moves = game.get_legal_moves()
-
+        
+        #If there is no possible moves any more, return the end-of-game values
         if not moves:
             return float("-inf"), (-1,-1)
+        
+        #If the current depth is root, return the current best score //
+        #   and first move from the left end of the search tree
         if depth == 0:
             return self.score(game, self), moves[0]
         
         
-        if maximizing_player == True:
+        if maximizing_player == True: #Max level search
             best_score = float("-inf")
             move = ()
+            
             for m in moves:
+                #Take values from all the child nodes and store the node with maximum score
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = False)
                 if v > best_score:
                     best_score = v
@@ -272,10 +293,11 @@ class CustomPlayer:
 
 
         
-        elif maximizing_player == False:
+        else: # Min level Search
             best_score = float("inf")
             move = ()
-            for m in moves:           
+            for m in moves: 
+                #Take values from all the child nodes and store the node with minimum score 
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = True)
                 if v < best_score:
                     best_score = v
@@ -285,7 +307,7 @@ class CustomPlayer:
         
         return best_score, move
 
-        #raise NotImplementedError
+
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
@@ -325,39 +347,49 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise Timeout()
 
-
+        #Initialisation: find all the possible moves, and store them in "moves" list
         moves = game.get_legal_moves()
         
+        #If there is no possible moves any more, return the end-of-game values
         if not moves:
             return float("-inf"), (-1,-1)
+        
+        #If the current depth is root, return the current best score //
+        #   and first move from the left end of the search tree
         if depth == 0:
             return self.score(game, self), moves[0]
             
-        if maximizing_player == True:
+        if maximizing_player == True: # Max level search
             move = ()
             for m in moves:
+                #Take values from all the child nodes and store the node that has score higher than
+                #lower boundary value alpha
                 v, _ = self.alphabeta(game.forecast_move(m), depth-1, alpha, beta, maximizing_player = False)
                 if v > alpha:
-                    alpha = v
+                    alpha = v #reset alpha with the new value
                     move = m
+                
+                #if any child branch has its highest score smaller than alpha, prune that branch             
                 if beta <= alpha:
                     break
 
             return alpha, move
 
         
-        elif maximizing_player == False:
+        else:
             move = ()
             for m in moves:
+                #Take values from all the child nodes and store the node that has score lower than
+                #upper boundary value beta
                 v, _ = self.alphabeta(game.forecast_move(m), depth-1, alpha, beta, maximizing_player = True)
                 if v < beta:
-                    beta = v
+                    beta = v #reset beta with the new value
                     move = m
+                
+                #if any child branch has its lowest score larger than beta, prune that branch                             
                 if beta <= alpha:
                     break
        
             return beta, move
-        #raise NotImplementedError
+
