@@ -51,10 +51,40 @@ def custom_score(game, player):
     opp_weight = 2.0
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    #empty_space_left = len(game.get_blank_spaces())
+    #board_size = game.width*game.height
+    #opp_weight = board_size/empty_space_left
+    score = float(own_weight*own_moves - opp_weight*opp_moves)
 
-    return float(own_weight*own_moves - opp_weight*opp_moves)
-    #raise NotImplementedError
+    return score
 
+
+    
+def center_focusd_score(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    
+    r, c = game.get_player_location(player)
+    
+    rows = game.height
+    cols = game.width
+    center_r = int(rows/2)
+    center_c = int(cols/2)
+    assert center_r == center_c
+    max_score = center_r
+
+
+    delta_r = abs(r - center_r)
+    delta_c = abs(c - center_c)
+    layer  = max(delta_r,delta_c)
+    score = layer
+    #print (score)
+    return score
+    
+    
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -86,7 +116,7 @@ class CustomPlayer:
         timer expires.
     """
 
-    def __init__(self, search_depth=3, score_fn=custom_score,
+    def __init__(self, search_depth=3, score_fn=center_focusd_score,
                  iterative=True, method='minimax', timeout=10.):
         self.search_depth = search_depth
         self.iterative = iterative
@@ -95,6 +125,11 @@ class CustomPlayer:
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
 
+    #def whatever()
+    # building a book of open moves using board rotation and stuff
+    
+    
+    
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
         result before the time limit expires.
@@ -143,6 +178,7 @@ class CustomPlayer:
         
         if not legal_moves:
             return (-1, -1)
+               
 
         try:
             # The search method call (alpha beta or minimax) should happen in
@@ -268,11 +304,14 @@ class CustomPlayer:
         # TODO: finish this function!
 
         #Initialisation: find all the possible moves, and store them in "moves" list
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise Timeout()
+        
         moves = game.get_legal_moves()
         
         #If there is no possible moves any more, return the end-of-game values
         if not moves:
-            return float("-inf"), (-1,-1)
+            return game.utility(self), (-1, -1)
         
         #If the current depth is root, return the current best score //
         #   and first move from the left end of the search tree
@@ -349,11 +388,13 @@ class CustomPlayer:
         """
 
         #Initialisation: find all the possible moves, and store them in "moves" list
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise Timeout()
         moves = game.get_legal_moves()
         
         #If there is no possible moves any more, return the end-of-game values
         if not moves:
-            return float("-inf"), (-1,-1)
+            return game.utility(self), (-1, -1)
         
         #If the current depth is root, return the current best score //
         #   and first move from the left end of the search tree
