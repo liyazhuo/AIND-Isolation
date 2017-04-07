@@ -18,6 +18,7 @@ class Timeout(Exception):
 #    pass
 
 def custom_score(game, player):
+    print("Get Lost Custom")
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
 
@@ -58,16 +59,15 @@ def custom_score(game, player):
 
     return score
 
-def distance_focused_score(game, player):
-    
-
+def away_from_opp_score(game, player):
+    print("Get Lost Away from Opponent")
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
     
-    opp_r, opp_c = game.get_player_location(get_opponent(player))
+    opp_r, opp_c = game.get_player_location(game.get_opponent(player))
     r, c = game.get_player_location(player)
     
     
@@ -78,15 +78,24 @@ def distance_focused_score(game, player):
     
     return score
 
-def combo_score(game, player):    
+#def away_from_blocked_score(game, player):
+  #  if game.is_loser(player):
+     #   return float("-inf")
 
+    #if game.is_winner(player):
+      #  return float("inf")
+
+    #blank_spaces = game.get_blank_spaces()
+
+def combo_score(game, player):    
+    #print("Get Lost Combo")
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
     
-    opp_r, opp_c = game.get_player_location(get_opponent(player))
+    opp_r, opp_c = game.get_player_location(game.get_opponent(player))
     r, c = game.get_player_location(player)
     own_moves = len(game.get_legal_moves(player))   
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
@@ -96,8 +105,9 @@ def combo_score(game, player):
     delta_r = abs(r - opp_r)
     delta_c = abs(c - opp_c)
     layer  = max(delta_r,delta_c)
-    score = layer*(own_moves-opp_moves)
-    
+    #score = layer/5.0 + (own_moves-opp_moves)/6.0
+    score =  float(own_moves - opp_moves*0)
+    #print( 6 - opp_moves)
     return score   
     
 
@@ -157,7 +167,7 @@ class CustomPlayer:
         timer expires.
     """
 
-    def __init__(self, search_depth=3, score_fn=combo_score,
+    def __init__(self, search_depth=7, score_fn=combo_score,
                  iterative=True, method='minimax', timeout=10.):
         self.search_depth = search_depth
         self.iterative = iterative
