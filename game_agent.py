@@ -48,7 +48,7 @@ def custom_score(game, player):
         return float("inf")
         
     own_weight = 1.0
-    opp_weight = 2.0
+    opp_weight = 5.0
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     #empty_space_left = len(game.get_blank_spaces())
@@ -58,9 +58,51 @@ def custom_score(game, player):
 
     return score
 
+def distance_focused_score(game, player):
+    
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    
+    opp_r, opp_c = game.get_player_location(get_opponent(player))
+    r, c = game.get_player_location(player)
+    
+    
+    delta_r = abs(r - opp_r)
+    delta_c = abs(c - opp_c)
+    layer  = max(delta_r,delta_c)
+    score = layer
+    
+    return score
+
+def combo_score(game, player):    
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    
+    opp_r, opp_c = game.get_player_location(get_opponent(player))
+    r, c = game.get_player_location(player)
+    own_moves = len(game.get_legal_moves(player))   
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+     
+    
+    
+    delta_r = abs(r - opp_r)
+    delta_c = abs(c - opp_c)
+    layer  = max(delta_r,delta_c)
+    score = layer*(own_moves-opp_moves)
+    
+    return score   
+    
 
     
-def center_focusd_score(game, player):
+def center_focused_score(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -81,7 +123,6 @@ def center_focusd_score(game, player):
     delta_c = abs(c - center_c)
     layer  = max(delta_r,delta_c)
     score = layer
-    #print (score)
     return score
     
     
@@ -116,7 +157,7 @@ class CustomPlayer:
         timer expires.
     """
 
-    def __init__(self, search_depth=3, score_fn=center_focusd_score,
+    def __init__(self, search_depth=3, score_fn=combo_score,
                  iterative=True, method='minimax', timeout=10.):
         self.search_depth = search_depth
         self.iterative = iterative
