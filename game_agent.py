@@ -18,7 +18,6 @@ class Timeout(Exception):
 #    pass
 
 def custom_score(game, player):
-    print("Get Lost Custom")
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
 
@@ -42,6 +41,11 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
+    return combo_score(game,player)
+
+
+
+def moves_score(game, player):    
     if game.is_loser(player):
         return float("-inf")
 
@@ -49,18 +53,15 @@ def custom_score(game, player):
         return float("inf")
         
     own_weight = 1.0
-    opp_weight = 5.0
+    opp_weight  = 2.0
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    #empty_space_left = len(game.get_blank_spaces())
-    #board_size = game.width*game.height
-    #opp_weight = board_size/empty_space_left
-    score = float(own_weight*own_moves - opp_weight*opp_moves)
 
+    score = float(own_weight*own_moves - opp_weight*opp_moves)
+    #score = float(2**own_moves-2*opp_moves)
     return score
 
 def away_from_opp_score(game, player):
-    print("Get Lost Away from Opponent")
     if game.is_loser(player):
         return float("-inf")
 
@@ -74,21 +75,11 @@ def away_from_opp_score(game, player):
     delta_r = abs(r - opp_r)
     delta_c = abs(c - opp_c)
     layer  = max(delta_r,delta_c)
-    score = layer
+    score = float(layer)
     
     return score
 
-#def away_from_blocked_score(game, player):
-  #  if game.is_loser(player):
-     #   return float("-inf")
-
-    #if game.is_winner(player):
-      #  return float("inf")
-
-    #blank_spaces = game.get_blank_spaces()
-
-def combo_score(game, player):    
-    #print("Get Lost Combo")
+def away_from_blocked_score(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -97,17 +88,23 @@ def combo_score(game, player):
     
     opp_r, opp_c = game.get_player_location(game.get_opponent(player))
     r, c = game.get_player_location(player)
-    own_moves = len(game.get_legal_moves(player))   
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-     
+    blank_spaces = game.get_blank_spaces()
+    neighbours = []
+    for (square_r, square_c) in blank_spaces:
+        if max(abs(square_r - r), abs(square_c - c)) == 1:
+            neighbours.append( (square_r, square_c))
+    score = float(len(neighbours))
+    return score
+
+
+
+def combo_score(game, player):    
+    score3 = away_from_blocked_score(game,player)
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    #score = float(score1*score2)
+    score = float( (5.5 -  score1)/5.0 + score2 + score3/5.0)
     
-    
-    delta_r = abs(r - opp_r)
-    delta_c = abs(c - opp_c)
-    layer  = max(delta_r,delta_c)
-    #score = layer/5.0 + (own_moves-opp_moves)/6.0
-    score =  float(own_moves - opp_moves*0)
-    #print( 6 - opp_moves)
     return score   
     
 
@@ -167,7 +164,7 @@ class CustomPlayer:
         timer expires.
     """
 
-    def __init__(self, search_depth=7, score_fn=combo_score,
+    def __init__(self, search_depth=3, score_fn=custom_score,
                  iterative=True, method='minimax', timeout=10.):
         self.search_depth = search_depth
         self.iterative = iterative
@@ -240,24 +237,30 @@ class CustomPlayer:
             # Initialisation : s and m1 are for score and best moves for the current depth of search
             #best_score and m2 are for best score of the over all search
             s = float("-inf")
-            m1 = legal_moves[0]
+            move =()
+            max_depth = game.height*game.width
+            center_square = int(game.height/2), int(game.width/2)
+            if center_square in legal_moves:
+                m1 = center_square
+            else:
+                m1 = legal_moves[0]
             best_score = float("-inf")
-            m2 = legal_moves[0]
-            
+            m2 = m1
+            score = float("-inf")
 
 
             if self.iterative == True:
                 if self.method == 'minimax':
                 
-                    depth = 0
-                    while m2 != (-1,-1):# Iterate depths until there is no more moves left
-                        for m in legal_moves:
+                    depth = 1
+                    while depth <= max_depth:# Iterate depths until there is no more moves left
+                        #for m in legal_moves:
                             # Implement minimax search for every potential moves
-                            score, _ = self.minimax(game.forecast_move(m), depth)
+                        score, move = self.minimax(game, depth)
                             # Return with the best moves of the current depth of search
-                            if score > s:
-                                s = score
-                                m1 = m
+                        if score > s:
+                            s = score
+                            m1 = move
                         # Store the score and best moves so far before funthering to the next search depth
                         best_score = s  
                         m2 = m1
@@ -269,18 +272,19 @@ class CustomPlayer:
                 elif self.method == 'alphabeta':
                 
                     depth = 0
-                    while m2 != (-1,-1):# Iterate depths until there is no more moves left
-                        for m in legal_moves:
+                    while depth <= max_depth:# Iterate depths until there is no more moves left
+                        #for m in legal_moves:
                             # Implement alpha-beta pruning for every potential moves
-                            score, _ = self.alphabeta(game.forecast_move(m), depth)
+                        score, move = self.alphabeta(game, depth)
                             # Return with the best moves of the current depth of search
-                            if score > s:
-                                s = score
-                                m1 = m
+                        if score > s:
+                            s = score
+                            m1 = move
                         # Store the score and best moves so far before funthering to the next search depth        
                         best_score = s
                         m2 = m1
                         depth = depth + 1
+                        #print (depth)
                         #If time is running out, return the best move so far
                         if self.time_left() < self.TIMER_THRESHOLD:
                             raise Timeout()
@@ -305,6 +309,7 @@ class CustomPlayer:
                         if score > s:
                             s = score
                             m2 = m
+            #print (s, score, m2, m1)
 
                 
                 
@@ -313,7 +318,7 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            return m1
+            return m2
 
         return m2
         # Return the best move from the last completed search iteration
@@ -368,6 +373,7 @@ class CustomPlayer:
         #   and first move from the left end of the search tree
         if depth == 0:
             return self.score(game, self), moves[0]
+             
         
         
         if maximizing_player == True: #Max level search
