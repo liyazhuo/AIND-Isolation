@@ -16,36 +16,91 @@ class Timeout(Exception):
 
 #class SearchDepthError(Exception):
 #    pass
-
 def custom_score(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
+    return combo_score(game, player)
 
-    Note: this function should be called from within a Player instance as
-    `self.score()` -- you should not need to call this function directly.
 
-    Parameters
-    ----------
-    game : `isolation.Board`
-        An instance of `isolation.Board` encoding the current state of the
-        game (e.g., player locations and blocked cells).
 
-    player : object
-        A player instance in the current game (i.e., an object corresponding to
-        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+def custom_score_1(game, player):
+    return split_score(game,player)
 
-    Returns
-    -------
-    float
-        The heuristic value of the current game state to the specified player.
-    """
-
-    # TODO: finish this function!
+def custom_score_2(game, player):
     return combo_score(game,player)
 
 
+def split_score(game, player):
+    if game.is_loser(player):
+        return float("-inf")
 
-def moves_score(game, player):    
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    if 0<=len(blank_spaces)<= board_size/3.0:
+        game_status = "Early Game"
+    elif board_size/3.0 < len(blank_spaces) <= board_size*2.0/3.0:
+        game_status = "Mid Game"
+    elif board_size*2.0/3.0 < len(blank_spaces) <= board_size:
+        game_status = "Late Game"
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    score3 = away_from_blocked_score(game,player)
+
+        
+    if game_status == "Early Game":
+        return score1
+    elif game_status == "Mid Game":
+        return score2
+    elif game_status == "Late Game":
+        return score3
+
+
+def combo_split_score(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    if 0<=len(blank_spaces)<= board_size/3.0:
+        game_status = "Early Game"
+    elif board_size/3.0 < len(blank_spaces) <= board_size*2.0/3.0:
+        game_status = "Mid Game"
+    elif board_size*2.0/3.0 < len(blank_spaces) <= board_size:
+        game_status = "Late Game"
+
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    score3 = away_from_blocked_score(game,player)
+    e_score = float( (score1)/1.25 + score2/2. + score3/4.0)
+    m_score = float( score1/2.5 + score2 + score3/4.0)
+    l_score = float( score1/2.5 + score2/2. + score3/2.0)
+        
+    if game_status == "Early Game":
+        return e_score
+    elif game_status == "Mid Game":
+        return m_score
+    elif game_status == "Late Game":
+        return l_score
+        
+    
+
+def combo_score(game, player):    
+    score3 = away_from_blocked_score(game,player)
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    score = float(score1/1.3 + score2 + score3/5.0)
+    
+    return score   
+    
+
+def moves_score(game, player ):    
     if game.is_loser(player):
         return float("-inf")
 
@@ -58,26 +113,10 @@ def moves_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
 
     score = float(own_weight*own_moves - opp_weight*opp_moves)
-    #score = float(2**own_moves-2*opp_moves)
+
     return score
 
-def away_from_opp_score(game, player):
-    if game.is_loser(player):
-        return float("-inf")
 
-    if game.is_winner(player):
-        return float("inf")
-    
-    opp_r, opp_c = game.get_player_location(game.get_opponent(player))
-    r, c = game.get_player_location(player)
-    
-    
-    delta_r = abs(r - opp_r)
-    delta_c = abs(c - opp_c)
-    layer  = max(delta_r,delta_c)
-    score = float(layer)
-    
-    return score
 
 def away_from_blocked_score(game, player):
     if game.is_loser(player):
@@ -96,17 +135,6 @@ def away_from_blocked_score(game, player):
     score = float(len(neighbours))
     return score
 
-
-
-def combo_score(game, player):    
-    score3 = away_from_blocked_score(game,player)
-    score1 = center_focused_score(game, player)
-    score2 = moves_score(game, player)
-    #score = float(score1*score2)
-    score = float( (5.5 -  score1)/5.0 + score2 + score3/5.0)
-    
-    return score   
-    
 
     
 def center_focused_score(game, player):
@@ -129,7 +157,7 @@ def center_focused_score(game, player):
     delta_r = abs(r - center_r)
     delta_c = abs(c - center_c)
     layer  = max(delta_r,delta_c)
-    score = layer
+    score = 5.5 - layer
     return score
     
     
@@ -364,7 +392,7 @@ class CustomPlayer:
             raise Timeout()
         
         moves = game.get_legal_moves()
-        
+
         #If there is no possible moves any more, return the end-of-game values
         if not moves:
             return game.utility(self), (-1, -1)
@@ -382,6 +410,8 @@ class CustomPlayer:
             
             for m in moves:
                 #Take values from all the child nodes and store the node with maximum score
+                if m in moves:
+                    break
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = False)
                 if v > best_score:
                     best_score = v
