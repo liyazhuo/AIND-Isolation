@@ -16,7 +16,7 @@ class Timeout(Exception):
 
 
 def custom_score(game, player):
-    return center_focused_score(game, player)
+    return combined_score(game, player)
 
 
 
@@ -30,7 +30,9 @@ def custom_score_2(game, player):
 
 
         
-def current_candidate(game, player):
+def combined_score(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
     if game.is_loser(player):
         return float("-inf")
 
@@ -39,8 +41,11 @@ def current_candidate(game, player):
         
     blank_spaces = game.get_blank_spaces()
     board_size = game.height*game.width
+    
+    #First half of the game
     if 0<=len(blank_spaces)<= board_size/2.0:
         game_status = "First Half"
+    #Second half of the game
     elif board_size/2.0 < len(blank_spaces) <= board_size:
         game_status = "Last Half"
 
@@ -49,7 +54,8 @@ def current_candidate(game, player):
 
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-
+    
+    #Set the scores with different emphasis.
     f_score = float( 3*score1 + score2 )
     l_score = float(score1 + 3*score2)
         
@@ -63,7 +69,6 @@ def combo_score(game, player):
     score3 = away_from_blocked_score(game,player)
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-    #score = float(score1/1.3 + score2 + score3/5.0)
     score = float(score1+2*score2)
     
     return score   
@@ -76,10 +81,11 @@ def moves_score(game, player ):
     if game.is_winner(player):
         return float("inf")
         
-    own_weight = 1.0
-    opp_weight  = 4.0
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    own_moves = len(game.get_legal_moves(player)) #Player's moves left
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player))) #Opponent's moves left
+    own_weight = 1.0 #The weight of the player's moves left
+    opp_weight  = 4.0 #The weight of the opponent's moves left
 
     score = float(own_weight*own_moves - opp_weight*opp_moves)
 
@@ -115,18 +121,22 @@ def center_focused_score(game, player):
     
     r, c = game.get_player_location(player)
     
+    #Find center cell
     rows = game.height
     cols = game.width
     center_r = int(rows/2)
     center_c = int(cols/2)
     assert center_r == center_c
-    max_score = center_r
+    
+    max_score = center_r +0.5 # Set up center score
 
 
     delta_r = abs(r - center_r)
     delta_c = abs(c - center_c)
+    
+    #The score will decrease as it gets closer and closer to the edges
     layer  = max(delta_r,delta_c)
-    score = 5.5 - layer
+    score = max_score - layer
     return score
     
     
