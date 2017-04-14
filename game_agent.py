@@ -14,21 +14,23 @@ class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
 
-#class SearchDepthError(Exception):
-#    pass
+
 def custom_score(game, player):
-    return combo_score(game, player)
+    return center_focused_score(game, player)
 
 
 
 def custom_score_1(game, player):
-    return split_score(game,player)
+    return current_candidate(game,player)
 
 def custom_score_2(game, player):
-    return combo_score(game,player)
+    return center_focused_score(game,player)
 
 
-def split_score(game, player):
+
+
+        
+def current_candidate(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -37,65 +39,32 @@ def split_score(game, player):
         
     blank_spaces = game.get_blank_spaces()
     board_size = game.height*game.width
-    if 0<=len(blank_spaces)<= board_size/3.0:
-        game_status = "Early Game"
-    elif board_size/3.0 < len(blank_spaces) <= board_size*2.0/3.0:
-        game_status = "Mid Game"
-    elif board_size*2.0/3.0 < len(blank_spaces) <= board_size:
-        game_status = "Late Game"
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
 
-    score1 = center_focused_score(game, player)
-    score2 = moves_score(game, player)
-    score3 = away_from_blocked_score(game,player)
-
-        
-    if game_status == "Early Game":
-        return score1
-    elif game_status == "Mid Game":
-        return score2
-    elif game_status == "Late Game":
-        return score3
-
-
-def combo_split_score(game, player):
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-        
-    blank_spaces = game.get_blank_spaces()
-    board_size = game.height*game.width
-    if 0<=len(blank_spaces)<= board_size/3.0:
-        game_status = "Early Game"
-    elif board_size/3.0 < len(blank_spaces) <= board_size*2.0/3.0:
-        game_status = "Mid Game"
-    elif board_size*2.0/3.0 < len(blank_spaces) <= board_size:
-        game_status = "Late Game"
 
 
 
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-    score3 = away_from_blocked_score(game,player)
-    e_score = float( (score1)/1.25 + score2/2. + score3/4.0)
-    m_score = float( score1/2.5 + score2 + score3/4.0)
-    l_score = float( score1/2.5 + score2/2. + score3/2.0)
+
+    f_score = float( 3*score1 + score2 )
+    l_score = float(score1 + 3*score2)
         
-    if game_status == "Early Game":
-        return e_score
-    elif game_status == "Mid Game":
-        return m_score
-    elif game_status == "Late Game":
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
         return l_score
-        
-    
+      
 
 def combo_score(game, player):    
     score3 = away_from_blocked_score(game,player)
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-    score = float(score1/1.3 + score2 + score3/5.0)
+    #score = float(score1/1.3 + score2 + score3/5.0)
+    score = float(score1+2*score2)
     
     return score   
     
@@ -108,7 +77,7 @@ def moves_score(game, player ):
         return float("inf")
         
     own_weight = 1.0
-    opp_weight  = 2.0
+    opp_weight  = 4.0
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
 
