@@ -389,8 +389,6 @@ class CustomPlayer:
             
             for m in moves:
                 #Take values from all the child nodes and store the node with maximum score
-                if m in moves:
-                    break
                 v, _ = self.minimax(game.forecast_move(m), depth-1, maximizing_player = False)
                 if v > best_score:
                     best_score = v

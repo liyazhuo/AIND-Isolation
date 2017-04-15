@@ -160,7 +160,6 @@ def main():
     # systems; i.e., the performance of the student agent is considered
     # relative to the performance of the ID_Improved agent to account for
     # faster or slower computers.
-
     test_agents = [Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
                    Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student")]
 
@@ -170,7 +169,7 @@ def main():
         print("*************************")
         print("{:^25}".format("Evaluating: " + agentUT.name))
         print("*************************")
-        
+
         agents = random_agents + mm_agents + ab_agents + [agentUT]
         win_ratio = play_round(agents, NUM_MATCHES)
 
