@@ -171,17 +171,13 @@ def main():
     # systems; i.e., the performance of the student agent is considered
     # relative to the performance of the ID_Improved agent to account for
     # faster or slower computers.
-    test_agents = [Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
-                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6")]
-    test_agents_2 = [Agent(CustomPlayer(score_fn=combined_score_5, **CUSTOM_ARGS), "combined_score_6")]
+    test_agents = [Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_4")]
+    test_agents_2 = [Agent(CustomPlayer(score_fn=combined_score_5, **CUSTOM_ARGS), "combined_score_5")]
 
     print(DESCRIPTION)
     for agentUT in test_agents:
