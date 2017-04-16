@@ -31,10 +31,17 @@ from sample_players import null_score
 from sample_players import open_move_score
 from sample_players import improved_score
 import game_agent
-from game_agent import CustomPlayer
-from game_agent import custom_score_2
-from game_agent import custom_score_1
-from game_agent import custom_score
+from game_agent_copy import CustomPlayer
+from game_agent_copy import combined_score_1
+from game_agent_copy import combined_score_2
+from game_agent_copy import combined_score_3
+from game_agent_copy import combined_score_4
+from game_agent_copy import combined_score_5
+from game_agent_copy import combined_score_6
+from game_agent_copy import combined_score_7
+from game_agent_copy import combined_score_8
+from game_agent_copy import combined_score_9
+
 
 
 NUM_MATCHES = 5  # number of matches against each opponent
@@ -164,8 +171,17 @@ def main():
     # systems; i.e., the performance of the student agent is considered
     # relative to the performance of the ID_Improved agent to account for
     # faster or slower computers.
-    test_agents = [Agent(CustomPlayer(score_fn=custom_score_1, **CUSTOM_ARGS), "Student1")]
-    test_agents_2 = [Agent(CustomPlayer(score_fn=custom_score_2, **CUSTOM_ARGS), "Student2")]
+    test_agents = [Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_5"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6"),
+                    Agent(CustomPlayer(score_fn=combined_score_4, **CUSTOM_ARGS), "combined_score_6")]
+    test_agents_2 = [Agent(CustomPlayer(score_fn=combined_score_5, **CUSTOM_ARGS), "combined_score_6")]
 
     print(DESCRIPTION)
     for agentUT in test_agents:
@@ -181,6 +197,9 @@ def main():
         print("\n\nResults:")
         print("----------")
         print("{!s:<15}{:>10.2f}%".format(agentUT.name, win_ratio))
+        
+        if win_ratio > 50.0:
+            print (agentUT.name)
 
 
 if __name__ == "__main__":

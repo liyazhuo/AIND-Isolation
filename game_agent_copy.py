@@ -30,7 +30,7 @@ def custom_score_2(game, player):
 
 
         
-def combined_score(game, player):
+def combined_score_1(game, player):
     #This heuristics combines the move score and center focused score.
     #It gives different weights to the above two at different stages of the game
     if game.is_loser(player):
@@ -54,7 +54,7 @@ def combined_score(game, player):
 
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-    game_weight = 4.0
+    game_weight = 1.0
     
     #Set the scores with different emphasis.
     f_score = float( game_weight*score1 + score2 )
@@ -66,6 +66,282 @@ def combined_score(game, player):
         return l_score
       
 
+def combined_score_2(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 2.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+   
+     
+
+def combined_score_3(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 3.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+
+     
+
+def combined_score_4(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 4.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+
+     
+
+def combined_score_5(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 4.5
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+
+     
+
+def combined_score_6(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 6.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+
+     
+
+def combined_score_7(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 7.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score         
+    
+     
+
+def combined_score_8(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 8.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score 
+     
+
+def combined_score_9(game, player):
+    #This heuristics combines the move score and center focused score.
+    #It gives different weights to the above two at different stages of the game
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+        
+    blank_spaces = game.get_blank_spaces()
+    board_size = game.height*game.width
+    
+    #First half of the game
+    if 0<=len(blank_spaces)<= board_size/2.0:
+        game_status = "First Half"
+    #Second half of the game
+    elif board_size/2.0 < len(blank_spaces) <= board_size:
+        game_status = "Last Half"
+
+
+    score1 = center_focused_score(game, player)
+    score2 = moves_score(game, player)
+    game_weight = 9.0
+    
+    #Set the scores with different emphasis.
+    f_score = float( game_weight*score1 + score2 )
+    l_score = float(score1 + game_weight*score2)
+        
+    if game_status == "First Half":
+        return f_score
+    elif game_status == "Last Half":
+        return l_score         
 def combo_score(game, player):    
     score3 = away_from_blocked_score(game,player)
     score1 = center_focused_score(game, player)
