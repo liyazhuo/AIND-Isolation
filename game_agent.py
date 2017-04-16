@@ -54,7 +54,7 @@ def combined_score(game, player):
 
     score1 = center_focused_score(game, player)
     score2 = moves_score(game, player)
-    game_weight = 4.0
+    game_weight = 5.0
     
     #Set the scores with different emphasis.
     f_score = float( game_weight*score1 + score2 )
