@@ -181,11 +181,7 @@ class CustomPlayer:
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
 
-    #def whatever()
-    # building a book of open moves using board rotation and stuff
-    
-    
-    
+ 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
         result before the time limit expires.
